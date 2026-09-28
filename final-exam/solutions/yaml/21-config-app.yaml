@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-app
+  namespace: ex280-t21
+  labels:
+    app: config-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-app
+  template:
+    metadata:
+      labels:
+        app: config-app
+    spec:
+      containers:
+      - name: hello-world-nginx
+        image: quay.io/redhattraining/hello-world-nginx:latest
+        envFrom:
+        - configMapRef:
+            name: t21-config
+        env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: t21-secret
+              key: API_KEY
+        volumeMounts:
+        - name: appconfig
+          mountPath: /etc/appconfig
+      volumes:
+      - name: appconfig
+        configMap:
+          name: t21-files

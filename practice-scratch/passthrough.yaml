@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: hello-tls-conf }
+data:
+  nginx.conf: |
+    events {}
+    http {
+      server {
+        listen 8443 ssl;
+        ssl_certificate /etc/tls/tls.crt;
+        ssl_certificate_key /etc/tls/tls.key;
+        location / { return 200 'hello-tls ok'; }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: hello-tls }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: hello-tls } }
+  template:
+    metadata: { labels: { app: hello-tls } }
+    spec:
+      containers:
+      - name: main
+        image: docker.io/library/nginx:latest
+        ports: [{ containerPort: 8443 }]
+        volumeMounts:
+        - { name: conf, mountPath: /etc/nginx/nginx.conf, subPath: nginx.conf }
+        - { name: tls, mountPath: /etc/tls, readOnly: true }
+        - { name: cache, mountPath: /var/cache/nginx }   # restricted-v2 SCC blocks nginx's
+        - { name: run, mountPath: /var/run }              # default cache/pid dirs otherwise
+      volumes:
+      - name: conf
+        configMap: { name: hello-tls-conf }
+      - name: tls
+        secret: { secretName: hello-tls-secret }
+      - name: cache
+        emptyDir: {}
+      - name: run
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata: { name: hello-tls }
+spec:
+  selector: { app: hello-tls }
+  ports: [{ port: 8443, targetPort: 8443 }]

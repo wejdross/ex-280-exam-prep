@@ -1,0 +1,15 @@
+# macOS / editors
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# local tooling
+.claude/
+
+# mock-exam scratch space and timer: your own in-progress solutions, not exam content
+final-exam/work/*
+!final-exam/work/.gitkeep
+final-exam/.exam-start
+

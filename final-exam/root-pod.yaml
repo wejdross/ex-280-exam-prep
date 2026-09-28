@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: raw-tcp
+  name: raw-tcp
+spec:
+  serviceAccountName: root-runner
+  serviceAccount: root-runner
+  containers:
+  - image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+    name: raw-tcp
+    command: ["bash", "-c", "nc -lk -p 9000 -e /bin/cat"]
+    resources: {}
+    ports:
+    - containerPort: 9000
+      name: rawtcp
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

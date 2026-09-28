@@ -1,0 +1,53 @@
+# EX280 command flashcards
+# Format: cue | answer | rule   ("#" = comment)
+# Read the cue, recall the command, then check the answer.
+
+utworzyć projekt myproj | oc new-project myproj | oc new-project <name>
+dodać rolę edit userowi alice w myproj | oc adm policy add-role-to-user edit alice -n myproj | RBAC namespaced przez oc adm policy
+nadać cluster-admin userowi alice | oc adm policy add-cluster-role-to-user cluster-admin alice | rola cluster-wide
+dodać SCC anyuid do ServiceAccount mysa | oc adm policy add-scc-to-user anyuid -z mysa -n myproj | -z = ServiceAccount (nie user!)
+wyłączyć self-provisioning projektów | oc adm policy remove-cluster-role-from-group self-provisioner system:authenticated:oauth | typowy admin task
+utworzyć pierwszego usera w htpasswd | htpasswd -c -B -b users.htpasswd alice redhat | -c tworzy plik (tylko pierwszy)
+dodać kolejnego usera do htpasswd | htpasswd -B -b users.htpasswd bob redhat | BEZ -c dla kolejnych
+utworzyć secret htpasswd | oc create secret generic htpasswd-secret --from-file=htpasswd=users.htpasswd -n openshift-config | IdP krok 2 (namespace openshift-config)
+zaktualizować secret htpasswd (istniejący) | oc set data secret/htpasswd-secret --from-file=htpasswd=users.htpasswd -n openshift-config | edycja userów IdP
+route EDGE z certem | oc create route edge app --service=app --cert=tls.crt --key=tls.key | edge = TLS konczy sie na routerze
+route PASSTHROUGH | oc create route passthrough app --service=app | pod robi TLS, brak certu na routerze
+route REENCRYPT | oc create route reencrypt app --service=app --cert=tls.crt --key=tls.key --dest-ca-cert=ca.crt | router->pod TLS na nowo + dest-ca
+wystawić serwis jako route HTTP | oc expose service/app | plain route bez TLS
+utworzyć ServiceAccount mysa | oc create sa mysa -n myproj | SA do linkowania SCC
+wylistować SCC | oc get scc | restricted-v2 = default od OCP 4.11
+utworzyć quota cpu4 mem8Gi pods10 | oc create quota myquota --hard=cpu=4,memory=8Gi,pods=10 -n myproj | ResourceQuota
+dodać readiness probe http 8080 healthz | oc set probe deploy/app --readiness --get-url=http://:8080/healthz | oc set probe
+cofnąć rollout deploya | oc rollout undo deploy/app | rollback
+podmienić obraz w deploy | oc set image deploy/app app=image:2.0 | oc set image
+dodać env z configmapy | oc set env deploy/app --from=configmap/mycm | oc set env --from
+zamontować PVC do deploya | oc set volume deploy/app --add --name=data -t pvc --claim-name=mypvc --mount-path=/data | oc set volume
+deploy z obrazu | oc new-app --name=app quay.io/org/image:tag | oc new-app
+zdrowie ClusterOperatorów | oc get co | co = clusteroperators
+zainstalowany operator (CSV) | oc get csv -n myproj | csv = ClusterServiceVersion; ip = InstallPlan
+drain node przed maintenance | oc adm drain node1 --ignore-daemonsets --delete-emptydir-data | + wczesniej oc adm cordon
+wyjaśnić spec zasobu | oc explain route.spec | zamiast szukania w docs
+znaleźć operator w marketplace | oc get packagemanifests -n openshift-marketplace | potem Subscription + OperatorGroup
+
+# --- 2026-07-13: sekcje dopisane po weryfikacji z redhat.com/EX280 (brakowało w drillu) ---
+zdeployować z kustomize overlay | oc apply -k overlays/prod/ | -k nie -f! kustomization.yaml w folderze
+tylko wyrenderować kustomize bez apply | oc kustomize overlays/prod/ | debug przed apply
+processować template z parametrem | oc apply -f <(oc process -f template.yaml -p NAME=foo) | process substitution zamiast potoku (format pliku nie znosi znaku potoku)
+new-app z template | oc new-app --template=<name> -p PARAM=value | zamiast image, referuj template
+dodać helm repo | helm repo add <repo-name> <url> | potem helm repo update
+zainstalować helm chart | helm install <release-name> <repo/chart> -n myproj | osobne narzedzie od oc
+wylistować helm release'y | helm list -n myproj | sprawdz status install
+odinstalować helm release | helm uninstall <release-name> -n myproj | czysci wszystkie resources
+wystawić appkę po surowym TCP (nie HTTP) | oc create service loadbalancer app --tcp=5432:5432 | Route NIE dziala dla non-HTTP! LoadBalancer/NodePort
+zmienić Service na LoadBalancer | oc patch svc/app -p '{"spec":{"type":"LoadBalancer"}}' | dla non-HTTP/SNI apps
+utworzyć jednorazowy Job | oc create job myjob --image=busybox -- echo hello | rozni sie od CronJob - jednorazowy
+odpalić CronJob ręcznie raz | oc create job myjob-from-cron --from=cronjob/hello | manualny trigger istniejacego crona
+dodać label do poda | oc label pod mypod env=prod | bez -, dodaje/nadpisuje
+usunąć label z poda | oc label pod mypod env- | minus na koncu klucza = usun
+filtrować po labelu | oc get pods -l env=prod | -l selector
+wyciągnąć pole przez jsonpath | oc get pods -o jsonpath='{.items[*].metadata.name}' | czeste na egzaminie, cwicz skladnie
+zobaczyć digest obrazu z taga | oc describe imagestreamtag app:latest | tag = ruchomy, digest = niezmienny (@sha256:)
+info o obrazie po digest | oc image info quay.io/org/image@sha256:abcdef | digest = immutable identyfikator
+zobaczyć eventy w namespace chronologicznie | oc get events -n myproj --sort-by=.lastTimestamp | pierwszy krok debugowania
+sprawdzić firing alerts | konsola web: Observe -> Alerting (Administrator perspective) | Prometheus/Alertmanager wbudowany

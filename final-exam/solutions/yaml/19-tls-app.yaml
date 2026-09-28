@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tls-app
+  namespace: ex280-t19
+  labels:
+    app: tls-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tls-app
+  template:
+    metadata:
+      labels:
+        app: tls-app
+    spec:
+      containers:
+      - name: server
+        image: registry.access.redhat.com/ubi9/python-311:latest
+        command: ["python3","-c","import http.server,ssl;ctx=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER);ctx.load_cert_chain('/etc/tls/tls.crt','/etc/tls/tls.key');s=http.server.HTTPServer(('0.0.0.0',8443),http.server.SimpleHTTPRequestHandler);s.socket=ctx.wrap_socket(s.socket,server_side=True);s.serve_forever()"]
+        ports:
+        - containerPort: 8443
+        volumeMounts:
+        - name: tls
+          mountPath: /etc/tls
+          readOnly: true
+      volumes:
+      - name: tls
+        secret:
+          secretName: tls-app-cert

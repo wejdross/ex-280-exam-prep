@@ -1,0 +1,66 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: hello-route
+spec:
+  host: hello-edge.apps-crc.testing
+  port:
+    targetPort: 8080-tcp
+  to:
+    kind: Service
+    name: hello
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: None
+    certificate: |
+      -----BEGIN CERTIFICATE-----
+      MIIDVTCCAj2gAwIBAgIUP4/vPxMU+F4wwzyxygOuPc05uoEwDQYJKoZIhvcNAQEL
+      BQAwJjEkMCIGA1UEAwwbaGVsbG8tZWRnZS5hcHBzLWNyYy50ZXN0aW5nMB4XDTI2
+      MDkwNjA3MzE1M1oXDTI3MDkwNjA3MzE1M1owJjEkMCIGA1UEAwwbaGVsbG8tZWRn
+      ZS5hcHBzLWNyYy50ZXN0aW5nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+      AQEAkLf7H7yG0zTX/kAjMY5YMmQ9jcJTG19WDNgoITaWwo16rNYvY8ZOPBzfDdJz
+      QWPHHbqwjYBm+lllBXql0h3ln9ZSBdnlDqc6H1xnwzvT9QZMFCNuXolAOYZj5CpV
+      Ky+nh/rKzy/2vatlMa++RPKv3p6aG+KNnVLiIIohaikTtvbgzSzmTjFPukowaEOF
+      q1Eqnis85jXOPWaqVSxPIaHlsHLnZWDkdqhFqutQbQ6cZsWxMaucwhzqURMsnnmi
+      9gJ65cn2zC09016cL8NvV1XwptWDBGtgbGjnobQpmkzftlA2jSwyGOmOclPt6wH5
+      8E5bTbv2UVaGdPUajinGRf6dgQIDAQABo3sweTAdBgNVHQ4EFgQU9i6YJVS7KVki
+      IUOQXTD+QppSea0wHwYDVR0jBBgwFoAU9i6YJVS7KVkiIUOQXTD+QppSea0wDwYD
+      VR0TAQH/BAUwAwEB/zAmBgNVHREEHzAdghtoZWxsby1lZGdlLmFwcHMtY3JjLnRl
+      c3RpbmcwDQYJKoZIhvcNAQELBQADggEBAA96q9xx7ZwqJDQa6v4nyJ5xNf8AmZ1Q
+      I39ouVHJL4GbJBfujtBr5xaeW+mSC12JXunDzhnTv+bqI4o0x6O4gkwhkeVS0GF/
+      tCb+zHES42okJ5vvA/I/iIcGh77juhrK+6YoerzTC/VrLzCmN0PlaJ+Lqcg8HsV1
+      rTFwixsJN1X674W4URn3W/0BvGQtAwEo0I6Yg2TdSFGTVSZA0BvR6a9nFj4rLtQr
+      YhfnJLkpbLEI9apT+Nm0VmQzasAHRf3pY/RurOhbX/KE8fjRgXvMdfSnEg/B548C
+      f4JTMLPK2Kh5HBbJwnn4XYcziZeBFDcR9qntR2D4O6mnEa+wNKFFGpc=
+      -----END CERTIFICATE-----
+    key: |
+      -----BEGIN PRIVATE KEY-----
+      MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCQt/sfvIbTNNf+
+      QCMxjlgyZD2NwlMbX1YM2CghNpbCjXqs1i9jxk48HN8N0nNBY8cdurCNgGb6WWUF
+      eqXSHeWf1lIF2eUOpzofXGfDO9P1BkwUI25eiUA5hmPkKlUrL6eH+srPL/a9q2Ux
+      r75E8q/enpob4o2dUuIgiiFqKRO29uDNLOZOMU+6SjBoQ4WrUSqeKzzmNc49ZqpV
+      LE8hoeWwcudlYOR2qEWq61BtDpxmxbExq5zCHOpREyyeeaL2AnrlyfbMLT3TXpwv
+      w29XVfCm1YMEa2BsaOehtCmaTN+2UDaNLDIY6Y5yU+3rAfnwTltNu/ZRVoZ09RqO
+      KcZF/p2BAgMBAAECggEAA/nkFtACmc61wQTw2pmVO4Q0yz5rs2C0D+wH9TqnW37Q
+      4CsN2AVQrLbj24C83S7xP3Q7ydV9btMyMvt2zx42awTz0biWAigu0QIEUVFFXnHu
+      +O4syADoIHR8bd5KYwJ/DT3DIPxpwHYTNJFmLkWHNrv/krTPrIMElr2I075/bctR
+      1322CrqV1tGTBAUKcv4ALGnSmR5sOrG+PzVHui/PzUDtWzR2CrqkeaQKloNvFXt0
+      6yY9RmfCXxshC3w7cJ+Aw4IQtL8Hg7MECl0YuN23H2gXXHOo0hkS7uwMKyQykvJT
+      rJ0SHnqV3wSgTdydpQlypgr3Xxv+eqbDg547vyTK2QKBgQDECX5RLIaXjDXx58Oy
+      5fPH+Wjei3k4XyTMt9cxDua3M6yARhNn1N+5jOqykPBPxdVfAlZjGdj259GJ3MgQ
+      PiQLoSrS4YqaUEMXc3qnocLKvdrONKS/efBn8xMOkKqAMsQmQ20zhoN22Ydiwa76
+      VE7D7id0PAnfosSE7CZDdqDhqQKBgQC8/AvFrJ9swNBTrB7dqQa1GSnwmvXU4y8W
+      5j7b3GFLX+9HmCzyjhoN7x5aAAOOl0z/DVA5cPSPraQ2ESWLIfAdn6wQu3QqGXyN
+      jLCyPxmy0lNdxydbOmO8sVDIaIkyFj+BDrEU6+cwTW4TxgKUvqhcEiIEkcFc7H4m
+      3Ik1Tsh0GQKBgC4EbHpxkUaRyzf1x6J/CDKxAUT8SIBLFUBZB1KkxNPMdXnG+Vcu
+      STYtNgqkq0SOk/+xdMXek2eiEzXhdbUaYSu5sWu/NeHzZUxj9y7Scf9Vgb9V7DZm
+      UWCVVqvcmaluQU0aFtA5izKi7XzpKkHo+HRVuz01urucYbUyGelMN4fBAoGAaqL+
+      MYh6XO9fnhcdQ45AzqdoVu/Zj0qyI4XAKmdsLw/vAMMJecRdR0eKJNalKyyMsc5d
+      Wkw2c2xToH6EZMG9r7mNadOcdLT05xpgCfQ5GAI+MEhUGNIVvT+AidUStUSAiN41
+      ZczHIyZN2rJ8eloqvektcM6eAUUg2eTPN1lBGuECgYAOQRcARZIldxSzXFey+f80
+      3fvIhRHtCCV59Nx5iO9803FJM3gPSvZZjbfYpieRSdp6pdB8sKvPEyI1H9xNIwcf
+      gQmomW8t75EdGKOEVDPMOQmDpLx5nK6+xsQBAPsljtwGPYuuwNqmmTMsnMsnbRYA
+      vrhoJWc1wttHZkFUpKoODw==
+      -----END PRIVATE KEY-----
+
+    

@@ -1,0 +1,29 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: t13-template
+parameters:
+- name: APP_NAME
+  required: true
+- name: REPLICAS
+  value: "1"
+objects:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: ${APP_NAME}
+    name: ${APP_NAME}
+  spec:
+    replicas: ${{REPLICAS}}
+    selector:
+      matchLabels:
+        app: ${APP_NAME}
+    template:
+      metadata:
+        labels:
+          app: ${APP_NAME}
+      spec:
+        containers:
+        - image: quay.io/redhattraining/hello-world-nginx:latest
+          name: hello-world-nginx

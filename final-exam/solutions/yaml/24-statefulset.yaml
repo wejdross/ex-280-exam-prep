@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: t24-db
+  namespace: ex280-t24
+spec:
+  clusterIP: None
+  selector:
+    app: t24-db
+  ports:
+  - port: 8080
+    name: db
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: t24-db
+  namespace: ex280-t24
+spec:
+  serviceName: t24-db
+  replicas: 2
+  selector:
+    matchLabels:
+      app: t24-db
+  template:
+    metadata:
+      labels:
+        app: t24-db
+    spec:
+      containers:
+      - name: db
+        image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+        command: ["sh","-c","echo $HOSTNAME > /data/id.txt; sleep 3600"]
+        volumeMounts:
+        - name: data
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi
